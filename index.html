@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Dani ❤️</title>
+    <style>
+        :root {
+            --primary-color: #ff4d6d;
+            --bg-color: #fff0f3;
+            --accent-color: #ffb703;
+            --text-dark: #590d22;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { color: var(--primary-color); margin-bottom: 1.2rem; font-size: 1.6rem; }
+        p { color: var(--text-dark); line-height: 1.6; font-size: 1.1rem; }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        button:hover {
+            background-color: #ff758f;
+            transform: scale(1.03);
+        }
+
+        .warning-btn { background-color: var(--accent-color); color: #000; }
+        .whatsapp-btn { background-color: #25d366; margin-top: 20px; font-size: 1.1rem; }
+        
+        textarea, input[type="text"] {
+            padding: 14px;
+            border: 2px solid #ffccd5;
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 15px;
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .final-note {
+            font-style: italic;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container"></div>
+
+<script>
+    let currentStep = -1; 
+    let answersLog = ""; 
+    
+    const questions = [
+        { q: "1. De los viajes que hemos tenido, ¿cuál ha sido el que más te ha gustado?", options: ["Cali", "Bogotá", "Melgar", "Arbeláez"] },
+        { q: "2. ¿Cuál parte de tu cuerpo crees que me gusta más?", options: ["Cara", "Labios", "Nalgas", "Todas las anteriores 😍"] },
+        { q: "3. ¿Qué es lo que más te gusta hacer conmigo?", type: "text" },
+        { q: "4. ¿Qué te gustaría hacer conmigo que no te has atrevido a decirme?", type: "text" },
+        { q: "5. ¿Qué cosa de mí no te gusta tanto?", type: "text" },
+        { q: "6. ¿Qué te gustaría que hiciera más seguido?", type: "text" },
+        { q: "7. Del 1 al 10, ¿qué tanto te gusta que te haga mía?", options: ["10", "100", "Infinito", "Más que eso 🔥"] },
+        { 
+            q: "⚠️ ADVERTENCIA", 
+            text: "La siguiente pregunta es la más importante de todas... ¿Deseas continuar?", 
+            options: ["Sí, deseo continuar"], 
+            isWarning: true 
+        },
+        { 
+            q: "La Pregunta Final ✨", 
+            text: "¿Quieres continuar conmigo por mucho tiempo más?", 
+            type: "final" 
+        }
+    ];
+
+    function render() {
+        const container = document.getElementById('main-container');
+        
+        if (currentStep === -1) {
+            container.innerHTML = `
+                <h2>¡Hola Dani! ❤️</h2>
+                <p>Quizás este sea el detalle más extraño que te hayan dado, pero espero que te guste mucho.</p>
+                <div class="btn-group"><button onclick="nextStep()">Iniciar</button></div>
+            `;
+            return;
+        }
+
+        if (currentStep >= questions.length) {
+            const waLink = `https://wa.me/?text=${encodeURIComponent("¡Hola amor! Aquí están mis respuestas de nuestros 8 meses:\n\n" + answersLog)}`;
+            container.innerHTML = `
+                <h2>❤️ ¡Felices 8 Meses! ❤️</h2>
+                <p>Vida, hoy cumplimos 8 meses y no puedo creer que el tiempo esté pasando tan rápido y que nuestra relación siga más fuerte que antes. Deseo que continuemos por mucho tiempo más.</p>
+                <span class="final-note">"Ten por seguro que todas tus respuestas las tendré en cuenta para hacerte mucho más feliz cada día."</span>
+                <div class="btn-group">
+                    <button class="whatsapp-btn" onclick="window.open('${waLink}')">Enviar respuestas al amor de mi vida 📲</button>
+                </div>
+            `;
+            return;
+        }
+
+        const data = questions[currentStep];
+        let html = `<h2>${data.q}</h2>`;
+        if (data.text) html += `<p>${data.text}</p>`;
+
+        if (data.type === "text") {
+            html += `
+                <input type="text" id="ans-input" placeholder="Escribe aquí..." autofocus>
+                <div class="btn-group"><button onclick="saveTextAnswer()">Siguiente</button></div>
+            `;
+        } else if (data.type === "final") {
+            html += `
+                <textarea id="final-extra" placeholder="Si quieres decirme algo más, escríbelo aquí (opcional)..." rows="3"></textarea>
+                <div class="btn-group"><button onclick="saveFinal()">¡SÍ, POR SUPUESTO! ❤️</button></div>
+            `;
+        } else {
+            html += `<div class="btn-group">`;
+            data.options.forEach(opt => {
+                const cl = data.isWarning ? 'warning-btn' : '';
+                html += `<button class="${cl}" onclick="saveOptionAnswer('${opt}')">${opt}</button>`;
+            });
+            html += `</div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function nextStep() { currentStep++; render(); }
+
+    function saveOptionAnswer(val) {
+        if (currentStep < questions.length - 2) {
+            answersLog += `📌 *${questions[currentStep].q}*\n- ${val}\n\n`;
+        }
+        nextStep();
+    }
+
+    function saveTextAnswer() {
+        const val = document.getElementById('ans-input').value;
+        if (!val) return alert("¡Escribe algo, amor! ❤️");
+        answersLog += `📌 *${questions[currentStep].q}*\n- ${val}\n\n`;
+        nextStep();
+    }
+
+    function saveFinal() {
+        const extra = document.getElementById('final-extra').value;
+        answersLog += `📌 *¿Quieres continuar conmigo?*\n- ¡SÍ, POR SUPUESTO! ❤️\n`;
+        if (extra) answersLog += `*Mensaje extra de Dani:* ${extra}\n`;
+        nextStep();
+    }
+
+    render();
+</script>
+
+</body>
+</html>
+
